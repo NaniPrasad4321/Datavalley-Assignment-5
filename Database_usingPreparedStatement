@@ -1,0 +1,60 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class Department {
+    private int id;
+    private String name;
+
+    public Department(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public static void main(String[] args) {
+        Department department = new Department(1, "Engineering");
+
+        insertDepartment(department);
+    }
+
+    private static void insertDepartment(Department department) {
+
+        String url = "jdbc:mysql://localhost:3306/departments";
+        String user = "Nani_Prasad"; //username
+        String password = "Nani@1234$"; //password
+
+        String sql = "INSERT INTO department (id, name) VALUES (?, ?)";
+
+        try (
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+            preparedStatement.setInt(1, department.getId());
+            preparedStatement.setString(2, department.getName());
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("A new Department was inserted successfully!");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error inserting Department: " + e.getMessage());
+        }
+    }
+}
